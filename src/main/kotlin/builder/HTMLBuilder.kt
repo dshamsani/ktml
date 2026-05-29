@@ -89,9 +89,6 @@ class HTMLBuilder {
                 val siblings = renderNode(node.nextSibling, depth)
 
                 when {
-                    node.tag.isRaw -> openTag(tag, depth, node.attributes)  +
-                            node.firstChild?.let { (it as? TextNode)?.content } +
-                            closeTag(tag, depth) + siblings
 
                     node.firstChild == null -> selfClosingTag(tag, depth, node.attributes) + siblings
                     node.tag == Tags.HTML -> doctype() + openTag(
