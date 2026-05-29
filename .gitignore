@@ -6,3 +6,7 @@ build/
 
 # Kotlin compiler cache
 .kotlin/
+
+.gradle
+
+gradle/wrapper
