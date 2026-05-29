@@ -38,18 +38,16 @@ class HTMLBuilder {
             throw RuntimeException("TextNode cannot have children")
         }
 
-        if (current is ElementNode && (current as ElementNode).firstChild == null) {
-            (current as ElementNode).firstChild = node
-            return
+        val currentElement = current as? ElementNode ?: return
+
+        if (currentElement.firstChild == null) {
+            currentElement.firstChild = node
+            currentElement.lastChild = node
+        } else {
+            currentElement.lastChild?.nextSibling = node
+            currentElement.lastChild = node
         }
 
-        var tempCurrent = (current as ElementNode).firstChild
-
-        while (tempCurrent?.nextSibling != null) {
-            tempCurrent = tempCurrent.nextSibling
-        }
-
-        tempCurrent?.nextSibling = node
     }
 
     fun enter(node: Node) {
