@@ -3,6 +3,7 @@ package builder
 import entity.ElementNode
 import entity.Node
 import entity.TextNode
+import shared.Attribute
 import shared.Tags
 
 class HTMLBuilder {
@@ -10,14 +11,20 @@ class HTMLBuilder {
     private var current: Node? = null
     private val stack = ArrayDeque<Node>()
 
+    private fun applyAttributes(attributes: MutableList<Attribute>, space: String = "") =
+        attributes.map { """ ${it.name.toString().lowercase()}="${it.value}"$space""" }.joinToString("")
+
     private fun indent(depth: Int) = "\t".repeat(depth)
     private fun doctype() = "<!DOCTYPE html>\n"
-    private fun openTag(tag: String, depth: Int) = "${indent(depth)}<$tag>"
-    private fun closeTag(tag: String, depth: Int) = "${indent(depth)}</$tag>\n"
-    private fun selfClosingTag(tag: String, depth: Int) = "${indent(depth)}<$tag />\n"
+    private fun openTag(tag: String, depth: Int, attributes: MutableList<Attribute>) =
+        "${indent(depth)}<$tag" + applyAttributes(attributes) + ">"
 
-    fun create() {
-        root = ElementNode(Tags.HTML)
+    private fun closeTag(tag: String, depth: Int) = "${indent(depth)}</$tag>\n"
+    private fun selfClosingTag(tag: String, depth: Int, attributes: MutableList<Attribute>) =
+        "${indent(depth)}<$tag" + applyAttributes(attributes, " ") + "/>\n"
+
+    fun create(attributes: MutableList<Attribute> = mutableListOf()) {
+        root = ElementNode(Tags.HTML, attributes)
         current = root
     }
 
@@ -77,10 +84,22 @@ class HTMLBuilder {
                 val siblings = renderNode(node.nextSibling, depth)
 
                 when {
-                    node.firstChild == null -> selfClosingTag(tag, depth) + siblings
-                    node.tag == Tags.HTML -> doctype() + openTag(tag, 0) + "\n" + renderNode(node.firstChild, depth + 1) + closeTag(tag, 0) + siblings
-                    node.firstChild is TextNode -> openTag(tag, depth) + renderNode(node.firstChild,0) + "</$tag>\n" + siblings
-                    else -> openTag(tag, depth) + "\n" + renderNode(node.firstChild, depth + 1) + closeTag(tag, depth) + siblings
+                    node.firstChild == null -> selfClosingTag(tag, depth, node.attributes) + siblings
+                    node.tag == Tags.HTML -> doctype() + openTag(
+                        tag,
+                        0,
+                        node.attributes
+                    ) + "\n" + renderNode(node.firstChild, depth + 1) + closeTag(tag, 0) + siblings
+
+                    node.firstChild is TextNode -> openTag(tag, depth, node.attributes) + renderNode(
+                        node.firstChild,
+                        0
+                    ) + "</$tag>\n" + siblings
+
+                    else -> openTag(tag, depth, node.attributes) + "\n" + renderNode(
+                        node.firstChild,
+                        depth + 1
+                    ) + closeTag(tag, depth) + siblings
                 }
             }
         }

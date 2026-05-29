@@ -63,7 +63,8 @@ enum class AttributeName {
     ROBOTS,
     THEME_COLOR,
     VIEWPORT,
-    HTTP_EQUIV
+    HTTP_EQUIV,
+    CHARSET
 }
 
 data class Attribute (val name: AttributeName, val value: String)

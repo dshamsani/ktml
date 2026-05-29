@@ -1,19 +1,40 @@
 import builder.HTMLBuilder
 import entity.ElementNode
 import entity.TextNode
+import shared.Attribute
+import shared.AttributeName
 import shared.Tags
 
 
 fun main() {
     val builder = HTMLBuilder()
-    builder.create()
+    builder.create(mutableListOf(Attribute(
+        name = AttributeName.LANG,
+        value = "en-US"
+    )))
 
     val head = ElementNode(Tags.HEAD)
-    val meta = ElementNode(Tags.META)
+    val meta = ElementNode(Tags.META, mutableListOf(Attribute(
+        name = AttributeName.CHARSET,
+        value = "utf-8"
+    )))
 
     val body = ElementNode(Tags.BODY)
     val h1 = ElementNode(Tags.H1)
-    val p = ElementNode(Tags.P)
+
+    val p = ElementNode(
+        Tags.P,
+        mutableListOf(
+            Attribute(
+                name = AttributeName.CLASS,
+                value = "first-class second-class third-class"
+            ),
+            Attribute(
+                name = AttributeName.ID,
+                value = "paragraph"
+            )
+        )
+    )
 
 
     val headerText = TextNode("Hello ktml")
