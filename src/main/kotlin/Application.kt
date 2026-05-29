@@ -1,6 +1,7 @@
 import builder.*
-import shared.Attribute
 import shared.AttributeName
+
+import java.io.File
 
 
 fun main() {
@@ -12,7 +13,7 @@ fun main() {
                 text("Hello, KTML!")
             }
             style {
-                text("font-weight: bold;")
+                text("p { font-weight: bold; color: red; } h1 { color: green; }")
             }
         }
         body {
@@ -22,10 +23,10 @@ fun main() {
             p {
                 text("is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the in.")
             }
-            script(AttributeName.SRC to "app.js")
         }
     }
 
 
-    println(builder.render())
+    File("examples").mkdirs()
+    File("examples/index.html").writeText(builder.render())
 }
