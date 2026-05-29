@@ -1,6 +1,6 @@
 package shared
 
-enum class Tags (val isInline: Boolean = false) {
+enum class Tags (val isInline: Boolean = false, val isRaw: Boolean = false) {
     A(isInline = true),
     ABBR(isInline = true),
     ADDRESS,
@@ -83,7 +83,7 @@ enum class Tags (val isInline: Boolean = false) {
     RUBY,
     S,
     SAMP(isInline = true),
-    SCRIPT(isInline = true),
+    SCRIPT(isRaw = true),
     SEARCH,
     SECTION,
     SELECT(isInline = true),
@@ -92,7 +92,7 @@ enum class Tags (val isInline: Boolean = false) {
     SOURCE,
     SPAN(isInline = true),
     STRONG(isInline = true),
-    STYLE,
+    STYLE(isRaw = true),
     SUB(isInline = true),
     SUMMARY,
     SUP(isInline = true),

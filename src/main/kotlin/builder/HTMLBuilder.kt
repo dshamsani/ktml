@@ -57,6 +57,10 @@ class HTMLBuilder {
             throw RuntimeException("Initialize builder before enter")
         }
 
+        if (node is ElementNode && node.tag == Tags.HTML) {
+            throw RuntimeException("Cannot enter root HTML element")
+        }
+
         stack.addLast(current!!)
         current = node
     }
@@ -87,6 +91,10 @@ class HTMLBuilder {
                 val siblings = renderNode(node.nextSibling, depth)
 
                 when {
+                    node.tag.isRaw -> openTag(tag, depth, node.attributes)  +
+                            node.firstChild?.let { (it as? TextNode)?.content } +
+                            closeTag(tag, depth) + siblings
+
                     node.firstChild == null -> selfClosingTag(tag, depth, node.attributes) + siblings
                     node.tag == Tags.HTML -> doctype() + openTag(
                         tag,

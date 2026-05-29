@@ -53,27 +53,28 @@ fun main() {
     builder.enter(head)
     builder.append(meta)
 
-    // TEST
+    // STYLE TAG
+    val style = ElementNode(Tags.STYLE)
 
-    val div = ElementNode(Tags.DIV)
-    val p2 = ElementNode(Tags.P)
-    val span = ElementNode(Tags.SPAN)
+    builder.enter(head)
+    builder.append(style)
+    builder.enter(style)
+    builder.append(TextNode("""
+        .first-class {
+            color: red;
+        }
+"""))
+
+    // SCRIPT TAG
+    val script = ElementNode(Tags.SCRIPT)
 
     builder.enter(body)
-    builder.append(div)
-    builder.enter(div)
-    builder.append(p2)
-    builder.enter(p2)
-    builder.append(TextNode("Hello world"))
-    builder.pop()
-    builder.append(TextNode("Hello world 2"))
+    builder.append(script)
+    builder.enter(script)
+    builder.append(TextNode("""
+        alert("Hello world!")     
+"""))
 
-    builder.enter(body)
-    builder.append(span)
-    builder.enter(span)
-    builder.append(TextNode("Hello world"))
-    builder.pop()
-    builder.append(TextNode("Hello world"))
 
     println(builder.render())
 }
