@@ -1,0 +1,8 @@
+# Build
+build/
+
+# IDE
+.idea/
+
+# Kotlin compiler cache
+.kotlin/
