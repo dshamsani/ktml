@@ -53,5 +53,27 @@ fun main() {
     builder.enter(head)
     builder.append(meta)
 
+    // TEST
+
+    val div = ElementNode(Tags.DIV)
+    val p2 = ElementNode(Tags.P)
+    val span = ElementNode(Tags.SPAN)
+
+    builder.enter(body)
+    builder.append(div)
+    builder.enter(div)
+    builder.append(p2)
+    builder.enter(p2)
+    builder.append(TextNode("Hello world"))
+    builder.pop()
+    builder.append(TextNode("Hello world 2"))
+
+    builder.enter(body)
+    builder.append(span)
+    builder.enter(span)
+    builder.append(TextNode("Hello world"))
+    builder.pop()
+    builder.append(TextNode("Hello world"))
+
     println(builder.render())
 }

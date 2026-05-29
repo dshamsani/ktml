@@ -11,8 +11,8 @@ class HTMLBuilder {
     private var current: Node? = null
     private val stack = ArrayDeque<Node>()
 
-    private fun applyAttributes(attributes: MutableList<Attribute>, space: String = "") =
-        attributes.map { """ ${it.name.toString().lowercase()}="${it.value}"$space""" }.joinToString("")
+    private fun applyAttributes(attributes: MutableList<Attribute>) =
+        attributes.map { """ ${it.name.toString().lowercase()}="${it.value}"""" }.joinToString("")
 
     private fun indent(depth: Int) = "\t".repeat(depth)
     private fun doctype() = "<!DOCTYPE html>\n"
@@ -21,7 +21,7 @@ class HTMLBuilder {
 
     private fun closeTag(tag: String, depth: Int) = "${indent(depth)}</$tag>\n"
     private fun selfClosingTag(tag: String, depth: Int, attributes: MutableList<Attribute>) =
-        "${indent(depth)}<$tag" + applyAttributes(attributes, " ") + "/>\n"
+        "${indent(depth)}<$tag" + applyAttributes(attributes) + " />\n"
 
     fun create(attributes: MutableList<Attribute> = mutableListOf()) {
         root = ElementNode(Tags.HTML, attributes)
@@ -73,11 +73,14 @@ class HTMLBuilder {
         return renderNode(root, 0)
     }
 
-    fun renderNode(node: Node?, depth: Int): String {
+    fun renderNode(node: Node?, depth: Int, isInlineContext: Boolean = false): String {
         if (node == null) return ""
 
         return when (node) {
-            is TextNode -> node.content + renderNode(node.nextSibling, depth)
+            is TextNode -> if (!isInlineContext) indent(depth) + node.content + renderNode(
+                node.nextSibling,
+                depth
+            ) + "\n" else node.content + renderNode(node.nextSibling, depth)
 
             is ElementNode -> {
                 val tag = node.tag.name.lowercase()
@@ -89,16 +92,18 @@ class HTMLBuilder {
                         tag,
                         0,
                         node.attributes
-                    ) + "\n" + renderNode(node.firstChild, depth + 1) + closeTag(tag, 0) + siblings
+                    ) + "\n" + renderNode(node.firstChild, depth + 1, node.tag.isInline) + closeTag(tag, 0) + siblings
 
                     node.firstChild is TextNode -> openTag(tag, depth, node.attributes) + renderNode(
                         node.firstChild,
-                        0
+                        0,
+                        isInlineContext = true
                     ) + "</$tag>\n" + siblings
 
                     else -> openTag(tag, depth, node.attributes) + "\n" + renderNode(
                         node.firstChild,
-                        depth + 1
+                        depth + 1,
+                        node.tag.isInline
                     ) + closeTag(tag, depth) + siblings
                 }
             }
